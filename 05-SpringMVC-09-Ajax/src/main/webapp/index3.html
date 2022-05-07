@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>测试前后端交互</title>
+    <script src="/js/jquery-1.8.3.min.js"></script>
+</head>
+<body>
+    <form>
+        <table align="center">
+            <tr>
+                <td>姓名</td>
+                <td><input id="name" type="text" name="name"></td>
+            </tr>
+            <tr>
+                <td>年龄</td>
+                <td><input id="age" type="text" name="age"></td>
+            </tr>
+            <tr>
+                <td>性别</td>
+                <td>
+                    <input type="radio" name="gender" value="男"> 男
+                    <input type="radio" name="gender" value="女" checked> 女
+                </td>
+            </tr>
+            <tr>
+                <td>生日</td>
+                <td><input id="birthday" type="date" name="birthday"></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <input type="reset" value="重置">
+                    <button onclick="register()" type="button">提交</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+<script type="text/javascript">
+    function register() {
+        var name = $("#name").val();
+        var age = $("#age").val();
+        var gender = $("input:checked").val();
+        var birthday = $("#birthday").val();
+
+        var json = {"name": name, "age": age, "gender": gender, "birthday": birthday};
+
+        $.ajax({
+            url: "/user/getJson",
+            type: "post",
+            data: JSON.stringify(json),
+            contentType: "application/json; charset=UTF-8",
+            success: function (data) {
+                // 用于将json对象转为json字符串
+                alert(JSON.stringify(data));
+
+                if (data.success) {
+                    alert("恭喜" + data.data + data.message)
+                } else {
+                    alert("注册失败")
+                }
+            }
+        })
+    }
+</script>
+</html>

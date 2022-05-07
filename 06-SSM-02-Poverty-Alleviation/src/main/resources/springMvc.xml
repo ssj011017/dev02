@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--扫描指定包下的注解-->
+    <context:component-scan base-package="com.fc.controller"/>
+
+    <mvc:annotation-driven/>
+
+    <!--swagger是静态资源，springmvc默认不支持静态资源放行的。所以必须加这个配置-->
+    <mvc:default-servlet-handler/>
+
+    <mvc:interceptors>
+        <!--跨域拦截器-->
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.fc.interceptor.CrossInterceptor"/>
+        </mvc:interceptor>
+        <!--jwt验证拦截器-->
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <!--登录不需要验证-->
+            <mvc:exclude-mapping path="/user/login"/>
+            <!--swagger相关的内容，必须进行放行-->
+            <mvc:exclude-mapping path="/swagger-ui.html/**"/>
+            <mvc:exclude-mapping path="/v2/**"/>
+            <mvc:exclude-mapping path="/webjars/**"/>
+            <mvc:exclude-mapping path="/swagger-resources/**"/>
+            <bean class="com.fc.interceptor.JwtInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!--导入业务层配置文件-->
+    <import resource="classpath:applicationContext.xml"/>
+
+    <!--文件解析器-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!--配置单个文件的大小-->
+        <property name="maxUploadSizePerFile" value="2000000"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+</beans>
